@@ -1,0 +1,136 @@
+-- 🌟 Chat GPT Code - by tuanan | Key: buituanan | Giao diện tiếng Việt + Anti-Ban
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/shlexware/Rayfield/main/source"))()
+
+local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+local Player = game.Players.LocalPlayer
+local VirtualUser = game:service("VirtualUser")
+
+-- 🛡️ Anti-AFK
+Player.Idled:Connect(function()
+    VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+end)
+
+-- 🔐 Key hệ thống
+local correctKey = "buituanan"
+
+Rayfield:Prompt({
+    Title = "🔑 Hệ Thống Nhập Key",
+    SubTitle = "Vui lòng nhập key để tiếp tục",
+    PlaceholderText = "Nhập key tại đây...",
+    ConfirmText = "Xác nhận",
+    InputType = "Default",
+    Callback = function(input)
+        if input == correctKey then
+            Rayfield:Notify({
+                Title = "✅ Thành công!",
+                Content = "Key chính xác, đang mở script...",
+                Duration = 4,
+            })
+
+            -- 🪟 Giao diện chính
+            local Window = Rayfield:CreateWindow({
+                Name = "Chat GPT Code",
+                LoadingTitle = "Chat GPT Code",
+                LoadingSubtitle = "by tuanan",
+                ConfigurationSaving = {
+                    Enabled = false
+                },
+                Discord = {
+                    Enabled = false
+                },
+                KeySystem = false
+            })
+
+            -- ⚙️ Biến
+            local autoFarm = false
+            local autoIsland = false
+            local delayDanh = 1
+
+            function GetLevelInfo()
+                local level = Player.Data.Level.Value
+                if level < 10 then
+                    return "Bandit", CFrame.new(1038, 16, 1547)
+                elseif level < 30 then
+                    return "Monkey", CFrame.new(-1602, 20, 152)
+                elseif level < 60 then
+                    return "Gorilla", CFrame.new(-1125, 40, -525)
+                elseif level < 100 then
+                    return "Pirate", CFrame.new(-5105, 5, 430)
+                else
+                    return "Bandit", CFrame.new(1038, 16, 1547)
+                end
+            end
+
+            -- ⚔️ Auto Farm
+            spawn(function()
+                while wait() do
+                    if autoFarm then
+                        local enemyName, _ = GetLevelInfo()
+                        for i,v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                            if v.Name:find(enemyName) and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                                repeat wait(delayDanh)
+                                    pcall(function()
+                                        Player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
+                                        game:GetService("VirtualInputManager"):SendKeyEvent(true, "Z", false, game)
+                                        wait(0.05)
+                                        game:GetService("VirtualInputManager"):SendKeyEvent(false, "Z", false, game)
+                                    end)
+                                until v.Humanoid.Health <= 0 or not v.Parent or not autoFarm
+                            end
+                        end
+                    end
+                end
+            end)
+
+            -- 🚢 Auto Đổi Đảo
+            spawn(function()
+                while wait(5) do
+                    if autoIsland then
+                        local _, islandPos = GetLevelInfo()
+                        pcall(function()
+                            Player.Character.HumanoidRootPart.CFrame = islandPos
+                        end)
+                    end
+                end
+            end)
+
+            -- 🖱️ Giao Diện Tiếng Việt
+            Window:CreateToggle({
+                Name = "🗡️ Bật/Tắt Tự Động Đánh Quái",
+                CurrentValue = false,
+                Callback = function(Value)
+                    autoFarm = Value
+                end,
+            })
+
+            Window:CreateToggle({
+                Name = "🧭 Bật/Tắt Tự Động Đổi Đảo Theo Cấp",
+                CurrentValue = false,
+                Callback = function(Value)
+                    autoIsland = Value
+                end,
+            })
+
+            Window:CreateSlider({
+                Name = "⚙️ Điều Chỉnh Tốc Độ Đánh (giây)",
+                Range = {0.1, 2},
+                Increment = 0.1,
+                Suffix = "giây",
+                CurrentValue = 1,
+                Callback = function(Value)
+                    delayDanh = Value
+                end,
+            })
+
+        else
+            Rayfield:Notify({
+                Title = "❌ Sai Key!",
+                Content = "Vui lòng nhập đúng key: buituanan",
+                Duration = 5,
+            })
+        end
+    end
+})

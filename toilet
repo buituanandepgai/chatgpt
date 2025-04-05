@@ -1,0 +1,128 @@
+-- 🌟 Script Lua Thuần - by tuanan - Key: buituanan
+
+-- 🛡️ Anti-AFK
+local vu = game:service("VirtualUser")
+game:GetService("Players").LocalPlayer.Idled:Connect(function()
+    vu:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+    wait(1)
+    vu:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+end)
+
+-- 🔐 Yêu cầu nhập key
+local correctKey = "buituanan"
+local success = false
+
+local function createKeyUI()
+    local gui = Instance.new("ScreenGui", game.CoreGui)
+    local frame = Instance.new("Frame", gui)
+    frame.Size = UDim2.new(0, 300, 0, 150)
+    frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+    frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+
+    local title = Instance.new("TextLabel", frame)
+    title.Text = "🔑 Nhập Key để dùng script"
+    title.Size = UDim2.new(1, 0, 0.3, 0)
+    title.TextColor3 = Color3.new(1, 1, 1)
+    title.BackgroundTransparency = 1
+    title.Font = Enum.Font.SourceSansBold
+    title.TextScaled = true
+
+    local textbox = Instance.new("TextBox", frame)
+    textbox.PlaceholderText = "Nhập key..."
+    textbox.Size = UDim2.new(0.8, 0, 0.25, 0)
+    textbox.Position = UDim2.new(0.1, 0, 0.4, 0)
+    textbox.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    textbox.TextColor3 = Color3.new(1, 1, 1)
+    textbox.Font = Enum.Font.SourceSans
+    textbox.TextScaled = true
+
+    local button = Instance.new("TextButton", frame)
+    button.Text = "Xác Nhận"
+    button.Size = UDim2.new(0.6, 0, 0.2, 0)
+    button.Position = UDim2.new(0.2, 0, 0.7, 0)
+    button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    button.TextColor3 = Color3.new(1, 1, 1)
+    button.Font = Enum.Font.SourceSansBold
+    button.TextScaled = true
+
+    button.MouseButton1Click:Connect(function()
+        if textbox.Text == correctKey then
+            gui:Destroy()
+            success = true
+        else
+            button.Text = "Sai Key!"
+            wait(1)
+            button.Text = "Xác Nhận"
+        end
+    end)
+end
+
+createKeyUI()
+repeat wait() until success
+
+-- 🧠 Auto Farm Setup
+local player = game.Players.LocalPlayer
+local autoFarm = false
+local autoIsland = false
+local delay = 1
+
+function getLevelInfo()
+    local level = player.Data.Level.Value
+    if level < 10 then
+        return "Bandit", CFrame.new(1038, 16, 1547)
+    elseif level < 30 then
+        return "Monkey", CFrame.new(-1602, 20, 152)
+    elseif level < 60 then
+        return "Gorilla", CFrame.new(-1125, 40, -525)
+    elseif level < 100 then
+        return "Pirate", CFrame.new(-5105, 5, 430)
+    else
+        return "Brute", CFrame.new(-1145, 15, 435)
+    end
+end
+
+-- 🗡️ Auto Farm
+spawn(function()
+    while wait() do
+        if autoFarm then
+            local enemy, _ = getLevelInfo()
+            for _,v in pairs(workspace.Enemies:GetChildren()) do
+                if v.Name:find(enemy) and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                    repeat wait(delay)
+                        pcall(function()
+                            player.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame * CFrame.new(0,10,0)
+                            game:GetService("VirtualInputManager"):SendKeyEvent(true, "Z", false, game)
+                            wait(0.1)
+                            game:GetService("VirtualInputManager"):SendKeyEvent(false, "Z", false, game)
+                        end)
+                    until v.Humanoid.Health <= 0 or not v.Parent or not autoFarm
+                end
+            end
+        end
+    end
+end)
+
+-- 🚢 Auto Teleport
+spawn(function()
+    while wait(5) do
+        if autoIsland then
+            local _, pos = getLevelInfo()
+            pcall(function()
+                player.Character.HumanoidRootPart.CFrame = pos
+            end)
+        end
+    end
+end)
+
+-- 🖱️ Tạo Giao Diện Lua Đơn Giản
+local gui = Instance.new("ScreenGui", game.CoreGui)
+gui.Name = "AutoFarmUI"
+
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0, 250, 0, 180)
+frame.Position = UDim2.new(0, 20, 0.4, 0)
+frame.BackgroundColor3 = Color3.fromRGB(35,35,35)
+
+local title = Instance.new("TextLabel", frame)
+title.Text = "📜 Chat GPT Code - by tuanan"
+title.Size = UDim2
